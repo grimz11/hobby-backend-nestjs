@@ -7,11 +7,14 @@ import {
   Patch,
   Post,
   Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { Cat } from './cats.model';
 import { CatsService } from './cats.service';
 import { CreateCatDTO } from './dto/create-cat-dto';
 import { FilterCatDTO } from './dto/filter-cat-dto';
+import { CatValidationPipe } from './pipes/cat-validation.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -31,6 +34,7 @@ export class CatsController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createTask(@Body() createCatDto: CreateCatDTO): Cat {
     return this.catsService.createCat<CreateCatDTO>(createCatDto);
   }
@@ -41,7 +45,7 @@ export class CatsController {
   }
 
   @Patch('/:id')
-  updateCat(@Param('id') id: string, @Body() payload: CreateCatDTO): Cat {
+  updateCat(@Param('id') id: string, @Body(null,CatValidationPipe) payload: CreateCatDTO): Cat {
     return this.catsService.updateCat(id, payload);
   }
 }

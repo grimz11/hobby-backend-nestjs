@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cat, CatsStatus } from './cats.model';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateCatDTO } from './dto/create-cat-dto';
@@ -34,7 +34,11 @@ export class CatsService {
   }
 
   getCatById(id: string): Cat {
-    return this.cats.find((cat) => cat.id === id);
+    const res = this.cats.find((cat) => cat.id === id);
+    if(!res) {
+      throw new NotFoundException('Cat you were looking for not found');
+    }
+    return res;
   }
 
   createCat<T extends CreateCatDTO>(payload: T): Cat {
@@ -52,13 +56,12 @@ export class CatsService {
   }
 
   deleteCat(id: string): void {
-    this.cats = this.cats.filter((cat) => cat.id !== id);
+    const res = this.getCatById(id);
+    this.cats = this.cats.filter((cat) => cat.id !== res.id);
   }
 
   updateCat(id: string, payload: CreateCatDTO): Cat {
     const cat = this.getCatById(id);
-    console.log(cat);
-    console.log(payload);
 
     cat.age = payload.age;
     cat.breed = payload.breed;
