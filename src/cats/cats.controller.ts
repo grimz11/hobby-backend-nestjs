@@ -4,13 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Cat } from './cats.model';
+import { Cat } from './cat.entity';
 import { CatsService } from './cats.service';
 import { CreateCatDTO } from './dto/create-cat-dto';
 import { FilterCatDTO } from './dto/filter-cat-dto';
@@ -21,31 +22,31 @@ export class CatsController {
   constructor(private catsService: CatsService) {}
 
   @Get()
-  getCats(@Query() filterCatDTO: FilterCatDTO): Array<Cat> {
-    if (Object.keys(filterCatDTO).length) {
-      return this.catsService.getCatsWithFilters<FilterCatDTO>(filterCatDTO);
-    }
-    return this.catsService.getAllCats();
+  getCats(@Query() filterCatDTO: FilterCatDTO): Promise<Array<Cat>> {
+    return this.catsService.getCats<FilterCatDTO>(filterCatDTO);
   }
 
   @Get('/:id')
-  getCatById(@Param('id') id: string): Cat {
+  getCatById(@Param('id', ParseIntPipe) id: number): Promise<Cat> {
     return this.catsService.getCatById(id);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  createTask(@Body() createCatDto: CreateCatDTO): Cat {
+  createTask(@Body() createCatDto: CreateCatDTO): Promise<Cat> {
     return this.catsService.createCat<CreateCatDTO>(createCatDto);
   }
 
   @Delete('/:id')
-  deleteCat(@Param('id') id: string): void {
-    this.catsService.deleteCat(id);
+  deleteCat(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.catsService.deleteCat(id);
   }
 
   @Patch('/:id')
-  updateCat(@Param('id') id: string, @Body(null,CatValidationPipe) payload: CreateCatDTO): Cat {
-    return this.catsService.updateCat(id, payload);
+  updateCat(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(null, CatValidationPipe) payload: CreateCatDTO,
+  ): Promise<Cat> {
+    return this.catsService.updateCat<CreateCatDTO>(id, payload);
   }
 }

@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { CatsStatus } from '../cats.model';
+import { CatsStatus } from '../cat-status.enum';
 
 export class CreateCatDTO {
   @IsNotEmpty()

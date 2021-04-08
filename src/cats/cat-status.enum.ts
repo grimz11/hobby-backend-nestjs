@@ -1,0 +1,4 @@
+export enum CatsStatus {
+  PUBLISHED = 'PUBLISHED',
+  UNPUBLISHED = 'UNPUBLISHED'
+}

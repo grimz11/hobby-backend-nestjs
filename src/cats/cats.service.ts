@@ -1,73 +1,54 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Cat, CatsStatus } from './cats.model';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CatsStatus } from './cat-status.enum';
+import { Cat } from './cat.entity';
+import { CatRepository } from './cat.repository';
 import { CreateCatDTO } from './dto/create-cat-dto';
 import { FilterCatDTO } from './dto/filter-cat-dto';
 
 @Injectable()
 export class CatsService {
-  private cats: Cat[] = [];
+  constructor(
+    @InjectRepository(CatRepository) private catRepository: CatRepository,
+  ) {}
 
-  getAllCats(): Array<Cat> {
-    return this.cats;
+  async getCats<T extends FilterCatDTO>(payload: T): Promise<Array<Cat>> {
+    return this.catRepository.getCats<T>(payload);
   }
 
-  getCatsWithFilters<T extends FilterCatDTO>(filterCatDTO: T): Array<Cat> {
-    const { status, age, name, breed } = filterCatDTO;
-    let cats = this.getAllCats();
-
-    if (status) {
-      cats = cats.filter(
-        (cat) => cat.status.toLocaleLowerCase() === status.toLocaleLowerCase(),
-      );
-    }
-    if (age || name || breed) {
-      cats = cats.filter(
-        (cat) =>
-          cat.age === age ||
-          cat.name?.toLocaleLowerCase().includes(name?.toLocaleLowerCase()) ||
-          cat.breed?.toLocaleLowerCase().includes(breed?.toLocaleLowerCase()),
-      );
-    }
-
-    return cats;
-  }
-
-  getCatById(id: string): Cat {
-    const res = this.cats.find((cat) => cat.id === id);
-    if(!res) {
+  async getCatById(id: number): Promise<Cat> {
+    const found = await this.catRepository.findOne(id);
+    if (!found) {
       throw new NotFoundException('Cat you were looking for not found');
     }
-    return res;
+    return found;
   }
 
-  createCat<T extends CreateCatDTO>(payload: T): Cat {
-    const cat: Cat = {
-      id: uuidv4(),
-      name: payload.name,
-      description: payload.description,
-      age: payload.age,
-      breed: payload.breed,
-      photo: payload.photo,
-      status: CatsStatus.PUBLISHED,
-    };
-    this.cats.push(cat);
-    return cat;
+  async createCat<T extends CreateCatDTO>(payload: T): Promise<Cat> {
+    return this.catRepository.createCat<T>(payload);
   }
 
-  deleteCat(id: string): void {
-    const res = this.getCatById(id);
-    this.cats = this.cats.filter((cat) => cat.id !== res.id);
+  async deleteCat(id: number): Promise<void> {
+    const res = await this.catRepository.delete(id);
+
+    if (res.affected === 0) {
+      throw new NotFoundException(`Cat not found!`);
+    }
   }
 
-  updateCat(id: string, payload: CreateCatDTO): Cat {
-    const cat = this.getCatById(id);
+  async updateCat<T extends CreateCatDTO>(
+    id: number,
+    payload: T,
+  ): Promise<Cat> {
+    const cat = await this.getCatById(id);
 
     cat.age = payload.age;
     cat.breed = payload.breed;
     cat.name = payload.name;
     cat.photo = payload.photo;
     cat.status = payload.status;
+
+    await cat.save();
 
     return cat;
   }

@@ -1,12 +1,11 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
-import { CatsStatus } from '../cats.model';
+import { CatsStatus } from '../cat-status.enum';
 
 export class CatValidationPipe implements PipeTransform {
   readonly allowedStatuses = [CatsStatus.PUBLISHED, CatsStatus.UNPUBLISHED];
 
   transform(value: any) {
     const checkStatus = value.status.toUpperCase();
-    console.log('value', value);
 
     if (!this.isStatusValid(checkStatus)) {
       throw new BadRequestException(`${value.status} is an invalid status`);
