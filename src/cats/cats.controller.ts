@@ -13,9 +13,9 @@ import {
 } from '@nestjs/common';
 import { Cat } from './cat.entity';
 import { CatsService } from './cats.service';
-import { CreateCatDTO } from './dto/create-cat-dto';
-import { FilterCatDTO } from './dto/filter-cat-dto';
-import { CatValidationPipe } from './pipes/cat-validation.pipe';
+import { CreateCatDTO } from './dto/createCatDto';
+import { FilterCatDTO } from './dto/filterCatDto';
+import { CatValidationPipe } from './pipes/catValidation.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -33,7 +33,7 @@ export class CatsController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createTask(@Body() createCatDto: CreateCatDTO): Promise<Cat> {
+  createCat(@Body() createCatDto: CreateCatDTO): Promise<Cat> {
     return this.catsService.createCat<CreateCatDTO>(createCatDto);
   }
 

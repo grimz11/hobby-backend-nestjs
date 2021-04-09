@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { CatsStatus } from './cat-status.enum';
+import { CatsStatus } from './catStatus.enum';
 
 @Entity()
 export class Cat extends BaseEntity {

@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CatsStatus } from './cat-status.enum';
+import { CatsStatus } from './catStatus.enum';
 import { Cat } from './cat.entity';
 import { CatRepository } from './cat.repository';
-import { CreateCatDTO } from './dto/create-cat-dto';
-import { FilterCatDTO } from './dto/filter-cat-dto';
+import { CreateCatDTO } from './dto/createCatDto';
+import { FilterCatDTO } from './dto/filterCatDto';
 
 @Injectable()
 export class CatsService {

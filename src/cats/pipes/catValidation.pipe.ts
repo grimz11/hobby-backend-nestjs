@@ -1,5 +1,5 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
-import { CatsStatus } from '../cat-status.enum';
+import { CatsStatus } from '../catStatus.enum';
 
 export class CatValidationPipe implements PipeTransform {
   readonly allowedStatuses = [CatsStatus.PUBLISHED, CatsStatus.UNPUBLISHED];
