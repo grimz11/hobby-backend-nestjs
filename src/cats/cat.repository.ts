@@ -7,6 +7,7 @@ import { FilterCatDTO } from './dto/filterCatDto';
 @EntityRepository(Cat)
 export class CatRepository extends Repository<Cat> {
   async createCat<T extends CreateCatDTO>(payload: T): Promise<Cat> {
+    console.log('payload.description', payload.description)
     const cat = new Cat();
     cat.name = payload.name;
     cat.description = payload.description;
@@ -21,14 +22,22 @@ export class CatRepository extends Repository<Cat> {
   }
 
   async getCats<T extends FilterCatDTO>(payload: T): Promise<Array<Cat>> {
-    const { status, age, name, breed } = payload;
+    const { status, age, name, breed, description } = payload;
     const query = this.createQueryBuilder('cat');
 
-    if(status) {
-      query.andWhere('cat.status = :status', {status});
+    if (status) {
+      query.andWhere('cat.status = :status', { status });
     }
-    if(age || name || breed){
-      query.andWhere('cat.age = :age OR LOWER(cat.name) LIKE :name OR LOWER(cat.breed) LIKE :breed', {age, name : `%${name?.toLocaleLowerCase()}%`, breed : `%${breed?.toLocaleLowerCase()}%`})
+    if (age || name || breed || description) {
+      query.andWhere(
+        'cat.age = :age OR LOWER(cat.name) LIKE :name OR LOWER(cat.breed) LIKE :breed or LOWER(cat.description) LIKE :description',
+        {
+          age,
+          name: `%${name?.toLowerCase()}%`,
+          breed: `%${breed?.toLowerCase()}%`,
+          description: `%${description?.toLowerCase()}%`,
+        },
+      );
     }
 
     const cats = await query.getMany();

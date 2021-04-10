@@ -11,4 +11,7 @@ export class FilterCatDTO {
 
     @IsNotEmpty()
     breed: string;
+
+    @IsNotEmpty()
+    description: string;
 }

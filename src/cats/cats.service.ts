@@ -43,6 +43,7 @@ export class CatsService {
     const cat = await this.getCatById(id);
 
     cat.age = payload.age;
+    cat.description = payload.description
     cat.breed = payload.breed;
     cat.name = payload.name;
     cat.photo = payload.photo;
