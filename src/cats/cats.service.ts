@@ -5,7 +5,6 @@ import { Cat } from './cat.entity';
 import { CatRepository } from './cat.repository';
 import { CreateCatDTO } from './dto/createCatDto';
 import { FilterCatDTO } from './dto/filterCatDto';
-
 @Injectable()
 export class CatsService {
   constructor(
@@ -23,7 +22,7 @@ export class CatsService {
     }
     return found;
   }
-
+  
   async createCat<T extends CreateCatDTO>(payload: T): Promise<Cat> {
     return this.catRepository.createCat<T>(payload);
   }

@@ -7,11 +7,13 @@ export class CreateCatDTO {
 
   description: string;
 
-  age: number;
   @IsNotEmpty()
-
+  age: number;
+  
+  @IsNotEmpty()
   breed: string;
 
+  // @IsNotEmpty()
   photo: string;
   
   status?: CatsStatus;

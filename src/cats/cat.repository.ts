@@ -7,7 +7,6 @@ import { FilterCatDTO } from './dto/filterCatDto';
 @EntityRepository(Cat)
 export class CatRepository extends Repository<Cat> {
   async createCat<T extends CreateCatDTO>(payload: T): Promise<Cat> {
-    console.log('payload.description', payload.description)
     const cat = new Cat();
     cat.name = payload.name;
     cat.description = payload.description;
