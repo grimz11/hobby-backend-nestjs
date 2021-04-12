@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { CatsStatus } from '../catStatus.enum';
+import { ECatsStatus } from '../enums/catStatus.enum';
 
 export class CreateCatDTO {
   @IsNotEmpty()
@@ -16,5 +16,5 @@ export class CreateCatDTO {
   // @IsNotEmpty()
   photo: string;
   
-  status?: CatsStatus;
+  status?: ECatsStatus;
 }

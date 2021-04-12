@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,23 +20,7 @@ import { CatsService } from './cats.service';
 import { CreateCatDTO } from './dto/createCatDto';
 import { FilterCatDTO } from './dto/filterCatDto';
 import { CatValidationPipe } from './pipes/catValidation.pipe';
-import { diskStorage } from 'multer';
-import path = require('path');
-import { v4 as uuidv4 } from 'uuid';
-
-export const storage = {
-  storage: diskStorage({
-    destination: './public/uploads/catimages',
-    filename: (req, file, cb) => {
-      const filename: string =
-        path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-
-      const extension: string = path.parse(file.originalname).ext;
-
-      cb(null, `${filename}${extension}`);
-    },
-  }),
-};
+import { storage } from './utils/utils';
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}
@@ -50,6 +35,11 @@ export class CatsController {
     return this.catsService.getCatById(id);
   }
 
+  @Post('/sort')
+  sortCatFields(@Query(null, CatValidationPipe) param: any): Promise<Array<Cat>> {
+    return this.catsService.sortCatFields(param);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('photo', storage))
   @UsePipes(ValidationPipe)
@@ -57,9 +47,11 @@ export class CatsController {
     @Body() payload: CreateCatDTO,
     @UploadedFile() file,
   ): Promise<Cat> {
-    // return of({ imagePath: file.filename });
-    payload.photo = file.filename;
+    if(!file) {
+      throw new BadRequestException('Photo is required!')
+    }
 
+    payload.photo = file.filename;
     return this.catsService.createCat<CreateCatDTO>(payload);
   }
 
@@ -72,10 +64,15 @@ export class CatsController {
   @UseInterceptors(FileInterceptor('photo', storage))
   updateCat(
     @Param('id', ParseIntPipe) id: number,
-    @Body(null, CatValidationPipe) payload: CreateCatDTO,
+    @Body() payload: CreateCatDTO,
     @UploadedFile() file
   ): Promise<Cat> {
+    if(!file) {
+      throw new BadRequestException('Photo is required!')
+    }
+
     payload.photo = file.filename;
     return this.catsService.updateCat<CreateCatDTO>(id, payload);
   }
+
 }

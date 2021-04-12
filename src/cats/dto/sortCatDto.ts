@@ -1,7 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 import { ECatsStatus } from "../enums/catStatus.enum";
 
-export class FilterCatDTO {
+export class SortCatDTO {
     status: ECatsStatus;
 
     @IsNotEmpty()
@@ -14,4 +14,6 @@ export class FilterCatDTO {
 
     @IsNotEmpty()
     description: string;
+
+
 }

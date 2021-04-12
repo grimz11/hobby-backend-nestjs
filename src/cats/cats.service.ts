@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CatsStatus } from './catStatus.enum';
+import { ECatsStatus } from './enums/catStatus.enum';
 import { Cat } from './cat.entity';
 import { CatRepository } from './cat.repository';
 import { CreateCatDTO } from './dto/createCatDto';
@@ -23,6 +23,10 @@ export class CatsService {
     return found;
   }
   
+  async sortCatFields(payload: any): Promise<Array<Cat>> {
+    return this.catRepository.sortCatFields(payload);
+  }
+
   async createCat<T extends CreateCatDTO>(payload: T): Promise<Cat> {
     return this.catRepository.createCat<T>(payload);
   }

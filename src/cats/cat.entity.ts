@@ -1,5 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { CatsStatus } from './catStatus.enum';
+import { BaseEntity, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ECatsStatus } from './enums/catStatus.enum';
 
 @Entity()
 export class Cat extends BaseEntity {
@@ -22,5 +22,16 @@ export class Cat extends BaseEntity {
   photo: string;
 
   @Column()
-  status: CatsStatus;
+  status: ECatsStatus;
+
+  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+  created_at: Date;
+
+  @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+  updated_at: Date;
+
+  @BeforeUpdate()
+  updateTimestamp() {
+    this.updated_at = new Date;
+  };
 }

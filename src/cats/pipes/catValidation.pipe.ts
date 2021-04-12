@@ -1,20 +1,32 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
-import { CatsStatus } from '../catStatus.enum';
+import { ECatSortName, ECatSortValue } from '../enums/catSort.enum';
+import { ECatsStatus } from '../enums/catStatus.enum';
+import { stringToArray } from '../utils/utils';
 
 export class CatValidationPipe implements PipeTransform {
-  readonly allowedStatuses = [CatsStatus.PUBLISHED, CatsStatus.UNPUBLISHED];
+  readonly allowedStatuses = [ECatsStatus.PUBLISHED, ECatsStatus.UNPUBLISHED];
+  readonly allowedSortValue = [ECatSortValue.ASC, ECatSortValue.DESC];
+  readonly allowedSortName = [ECatSortName.name, ECatSortName.breed, ECatSortName.age, ECatSortName.created_at];
 
   transform(value: any) {
-    const checkStatus = value.status.toUpperCase();
+    const result = stringToArray(value);
 
-    if (!this.isStatusValid(checkStatus)) {
-      throw new BadRequestException(`${value.status} is an invalid status`);
+    const checkSortValue = result?.[1].toUpperCase();
+    const checkSortName = result?.[0];
+
+    if(!this.isValid(checkSortValue, 'value')) {
+      throw new BadRequestException(`Invalid sort indetifier must be a (ASC, DESC).`);
     }
+    if(!this.isValid(checkSortName, 'name')) {
+      throw new BadRequestException(`Invalid sort name indetifier must be a (name, age, breed, created_at).`);
+    }
+
     return value;
   }
 
-  private isStatusValid(status: any) {
-    const idx = this.allowedStatuses.indexOf(status);
-    return idx !== -1;
+  private isValid(name: any, type: string): boolean {
+    if(type === 'name') return  this.allowedSortName.indexOf(name) !== -1;
+
+    if(type === 'value') return this.allowedSortValue.indexOf(name)  !== -1;
   }
 }
